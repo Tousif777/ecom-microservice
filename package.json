@@ -1,0 +1,32 @@
+{
+  "name": "ecom-microservices",
+  "version": "1.0.0",
+  "description": "E-commerce microservices backend with PostgreSQL schema separation",
+  "scripts": {
+    "setup": "./setup.sh",
+    "start": "docker compose up -d",
+    "stop": "docker compose down",
+    "restart": "docker compose restart",
+    "logs": "docker compose logs -f",
+    "clean": "docker compose down -v",
+    "dev": "docker compose up -d --build",
+    "status": "docker compose ps"
+  },
+  "keywords": [
+    "microservices",
+    "ecommerce", 
+    "nodejs",
+    "express",
+    "postgresql",
+    "prisma",
+    "redis",
+    "rabbitmq",
+    "docker"
+  ],
+  "author": "Your Name",
+  "license": "MIT",
+  "engines": {
+    "node": ">=18.0.0",
+    "docker": ">=20.0.0"
+  }
+}
