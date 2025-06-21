@@ -66,20 +66,6 @@ echo "✅ Environment files created"
 echo "🚀 Starting all services..."
 docker compose up -d --build
 
-# Generate Prisma clients
-echo "🔧 Generating Prisma clients..."
-
-prisma_services=("user-service" "product-service" "order-service" "payment-service")
-
-for service in "${prisma_services[@]}"; do
-    echo "Generating Prisma client for $service..."
-    cd "services/$service"
-    npx prisma generate
-    cd "../.."
-done
-
-echo "✅ Prisma clients generated"
-
 # Wait for PostgreSQL to be ready
 echo "⏳ Waiting for PostgreSQL to be ready..."
 sleep 15
@@ -88,22 +74,16 @@ sleep 15
 echo "🗃️ Creating database schemas..."
 docker compose exec -T postgres psql -U admin -d myapp -f /docker-entrypoint-initdb.d/init-schemas.sql
 
-# Push database schemas
-echo "📤 Pushing database schemas..."
+# Wait for services to complete their startup (including Prisma setup)
+echo "⏳ Waiting for services to complete startup..."
+sleep 20
 
-for service in "${prisma_services[@]}"; do
-    echo "Pushing schema for $service..."
-    cd "services/$service"
-    npx prisma db push
-    cd "../.."
-done
-
-echo "✅ Database schemas pushed"
+echo "✅ All services started and configured"
 
 # Verify setup
 echo "🔍 Verifying setup..."
 echo "Checking database schemas..."
-docker compose exec -T postgres psql -U admin -d myapp -c "SELECT schemaname FROM information_schema.schemata WHERE schemaname LIKE '%_service';"
+docker compose exec -T postgres psql -U admin -d myapp -c "SELECT schema_name FROM information_schema.schemata WHERE schema_name LIKE '%_service';"
 
 echo "Testing service health..."
 sleep 5

@@ -23,7 +23,7 @@
     "rabbitmq",
     "docker"
   ],
-  "author": "Your Name",
+  "author": "Md Tousif",
   "license": "MIT",
   "engines": {
     "node": ">=18.0.0",

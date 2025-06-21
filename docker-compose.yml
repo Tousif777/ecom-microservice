@@ -13,6 +13,11 @@ services:
     volumes:
       - pgdata:/var/lib/postgresql/data
       - ./init-schemas.sql:/docker-entrypoint-initdb.d/init-schemas.sql
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -U admin -d myapp"]
+      interval: 10s
+      timeout: 5s
+      retries: 5
 
   # Redis (Cache / Queues)
   redis:
@@ -21,6 +26,11 @@ services:
     restart: always
     ports:
       - "6379:6379"
+    healthcheck:
+      test: ["CMD", "redis-cli", "ping"]
+      interval: 10s
+      timeout: 5s
+      retries: 5
 
   # RabbitMQ with Management UI
   rabbitmq:
@@ -33,6 +43,11 @@ services:
     environment:
       RABBITMQ_DEFAULT_USER: admin
       RABBITMQ_DEFAULT_PASS: admin123
+    healthcheck:
+      test: ["CMD", "rabbitmq-diagnostics", "-q", "ping"]
+      interval: 30s
+      timeout: 10s
+      retries: 5
 
   # MailHog (Fake Email Server)
   mailhog:
@@ -75,9 +90,12 @@ services:
     ports:
       - "3001:3001"
     depends_on:
-      - postgres
-      - redis
-      - rabbitmq
+      postgres:
+        condition: service_healthy
+      redis:
+        condition: service_healthy
+      rabbitmq:
+        condition: service_healthy
     environment:
       - NODE_ENV=development
       - DB_HOST=postgres
@@ -98,9 +116,12 @@ services:
     ports:
       - "3002:3002"
     depends_on:
-      - postgres
-      - redis
-      - rabbitmq
+      postgres:
+        condition: service_healthy
+      redis:
+        condition: service_healthy
+      rabbitmq:
+        condition: service_healthy
     environment:
       - NODE_ENV=development
       - DB_HOST=postgres
@@ -121,9 +142,12 @@ services:
     ports:
       - "3003:3003"
     depends_on:
-      - postgres
-      - redis
-      - rabbitmq
+      postgres:
+        condition: service_healthy
+      redis:
+        condition: service_healthy
+      rabbitmq:
+        condition: service_healthy
     environment:
       - NODE_ENV=development
       - DB_HOST=postgres
@@ -144,9 +168,12 @@ services:
     ports:
       - "3004:3004"
     depends_on:
-      - postgres
-      - redis
-      - rabbitmq
+      postgres:
+        condition: service_healthy
+      redis:
+        condition: service_healthy
+      rabbitmq:
+        condition: service_healthy
     environment:
       - NODE_ENV=development
       - DB_HOST=postgres
@@ -167,10 +194,14 @@ services:
     ports:
       - "3005:3005"
     depends_on:
-      - postgres
-      - redis
-      - rabbitmq
-      - mailhog
+      postgres:
+        condition: service_healthy
+      redis:
+        condition: service_healthy
+      rabbitmq:
+        condition: service_healthy
+      mailhog:
+        condition: service_started
     environment:
       - NODE_ENV=development
       - DB_HOST=postgres

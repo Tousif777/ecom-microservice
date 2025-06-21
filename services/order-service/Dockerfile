@@ -15,4 +15,8 @@ COPY . .
 
 EXPOSE 3003
 
-CMD ["npm", "start"]
+# Copy and set up startup script
+COPY start.sh /app/start.sh
+RUN chmod +x /app/start.sh
+
+CMD ["/app/start.sh"]
